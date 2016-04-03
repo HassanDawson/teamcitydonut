@@ -1,12 +1,9 @@
-﻿using System;
-using System.Security;
-
-namespace teamcitydonut
+﻿namespace teamcitydonut
 {
 	public interface ITeamCityOptions
 	{
-		Uri TeamCityUri { get; set; }
-		SecureString Password { get; set; }
+		string TeamCityUri { get; set; }
+		string Password { get; set; }
 		string UserName { get; set; }
 	}
 }
