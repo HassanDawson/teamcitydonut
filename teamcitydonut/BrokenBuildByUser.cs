@@ -6,6 +6,7 @@ namespace teamcitydonut
 {
 	internal class BrokenBuildByUser
 	{
+		private readonly ITeamCityOptions _teamCityOptions;
 		private readonly BrokenBuild.Factory _brokenBuildFactory;
 		private readonly IList<BrokenBuild> _brokenBuilds;
 
@@ -13,8 +14,9 @@ namespace teamcitydonut
 
 		public IEnumerable<BrokenBuild> BrokenBuilds => _brokenBuilds;
 
-		public BrokenBuildByUser(BrokenBuild.Factory brokenBuildFactory, string userName)
+		public BrokenBuildByUser(ITeamCityOptions teamCityOptions, BrokenBuild.Factory brokenBuildFactory, string userName)
 		{
+			_teamCityOptions = teamCityOptions;
 			_brokenBuildFactory = brokenBuildFactory;
 			UserName = userName;
 			_brokenBuilds = new List<BrokenBuild>();
@@ -33,7 +35,8 @@ namespace teamcitydonut
 			stringBuilder.AppendLine($"======{UserName} Total:{BrokenBuilds.Count()}======");
 			foreach (var brokenBuild in BrokenBuilds)
 			{
-				stringBuilder.AppendLine($"Build configuration: {brokenBuild.BuildTypeId} Build number:{brokenBuild.BuildNumber}");
+				string buildUrl = $"http://{_teamCityOptions.TeamCityUri}/viewLog.html?buildId={brokenBuild.BuildId}&tab=buildResultsDiv&buildTypeId={brokenBuild.BuildTypeId}";
+				stringBuilder.AppendLine($"Build configuration: {brokenBuild.BuildTypeId} Build number:{brokenBuild.BuildNumber} Url:{buildUrl}");
 			}
 			stringBuilder.AppendLine();
 			return stringBuilder.ToString();
