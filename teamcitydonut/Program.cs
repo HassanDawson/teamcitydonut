@@ -14,6 +14,9 @@ namespace teamcitydonut
 			fluentCommandLineParser.Setup(f => f.TeamCityUri).As('t', "uri").Required().WithDescription("Url to access TC");
 			fluentCommandLineParser.Setup(f => f.Password).As('p', "password").Required().WithDescription("Password to access TC");
 			fluentCommandLineParser.Setup(f => f.UserName).As('u', "username").Required().WithDescription("Username to access TC");
+			fluentCommandLineParser.Setup(f => f.BuildsOfInterest).As('b', "builds").Required().WithDescription("The configuration ID of the builds we are interested in");
+			fluentCommandLineParser.Setup(f => f.StartOfStats).As('s', "start").WithDescription("Start date for statistics gathering").SetDefault(DateTime.Today.AddDays(-1*(DateTime.Today.Day - 1))); // default is start of month
+			fluentCommandLineParser.Setup(f => f.EndOfStats).As('e', "end").WithDescription("End date for statistics gathering").SetDefault(DateTime.Today.AddDays(DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month) - DateTime.Today.Day));
 
 			ICommandLineParserResult commandLineParserResult = fluentCommandLineParser.Parse(args);
 
@@ -25,6 +28,8 @@ namespace teamcitydonut
 				containerBuilder.RegisterModule<NLogModule>();
 				containerBuilder.RegisterInstance(teamCityOptions).As<ITeamCityOptions>().SingleInstance();
 				containerBuilder.RegisterType<MyApplication>().As<IApplication>().SingleInstance();
+				containerBuilder.RegisterType<BrokenBuildByUser>();
+				containerBuilder.RegisterType<BrokenBuild>();
 
 				var container = containerBuilder.Build();
 				var application = container.Resolve<IApplication>();
